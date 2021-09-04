@@ -4,7 +4,8 @@
 
 ### Introduction
 We would like you to create a simple “real-time” stream processing pipeline. We will use a fixed flight route dataset as a source. Our pipeline should provide us the most popular source airports per time window.
-Here is a link with a dataset which you use for this assignment: https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat . The documentation for this data can be found here: https://openflights.org/data.html .
+Here is a link with a dataset which you use for this assignment: <https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat> . 
+The documentation for this data can be found here: <https://openflights.org/data.html .
 
 ### Assignment
 Using the flight routes dataset you will stream the given data into our pipeline, process it and display results. Keep in mind the resulting implementation needs to be somehow demoable. Use tooling you think is best fitted for the task (e.g. Docker, public cloud, etc.) and give us an explanation why you decided for it.
