@@ -1,5 +1,4 @@
-package xyz.graphiq.schiphol.analytics.util
-
+package xyz.graphiq.schiphol.util
 
 import org.apache.avro.{Schema => AvroSchema}
 import org.apache.spark.sql.avro.SchemaConverters

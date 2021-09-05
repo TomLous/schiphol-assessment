@@ -1,0 +1,22 @@
+{
+  "namespace": "xyz.graphiq.schiphol.model",
+  "type": "record",
+  "name": "Test1",
+  "aliases": [
+    "Testje"
+  ],
+  "fields": [
+    {
+      "name": "str",
+      "type": "string"
+    },
+    {
+      "name": "num",
+      "type": "int"
+    },
+    {
+      "name": "numLong",
+      "type": "long"
+    }
+  ]
+}

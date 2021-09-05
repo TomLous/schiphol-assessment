@@ -19,9 +19,6 @@ target/
 
 # Local run & build
 /spark-warehouse/
-application.local.conf
 output/
 secrets
 
-# test
-data

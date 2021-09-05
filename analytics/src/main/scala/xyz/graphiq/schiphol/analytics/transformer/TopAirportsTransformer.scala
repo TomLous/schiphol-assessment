@@ -2,8 +2,7 @@ package xyz.graphiq.schiphol.analytics.transformer
 
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
-import xyz.graphiq.schiphol.analytics.model.TopAirports
-import xyz.graphiq.schiphol.model.Route
+import xyz.graphiq.schiphol.model.{Route, TopAirports}
 
 object TopAirportsTransformer {
   trait TopType {

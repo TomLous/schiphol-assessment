@@ -1,5 +1,6 @@
 package xyz.graphiq.schiphol.transformer
 
+import org.apache.spark.sql.catalyst.expressions.objects.AssertNotNull
 import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.IntegerType
@@ -12,6 +13,7 @@ case class RouteRawTransformer(implicit spark: SparkSession) extends Function[Da
   import spark.implicits._
 
   private val nullIntTransformer: Column => Column = c => when(c === lit("""\N"""), null).otherwise(c).cast(IntegerType)
+  private val notNullTransformer: Column => Column = c => new Column(AssertNotNull(c.expr))
 
   private val equipmentUdf: UserDefinedFunction = udf(
     (equipmentList: Seq[String]) =>
@@ -23,18 +25,19 @@ case class RouteRawTransformer(implicit spark: SparkSession) extends Function[Da
   )
 
   override def apply(v1: DataFrame): Dataset[Route] = {
+
     v1
       .withColumn("airline",
-        struct(nullIntTransformer('airlineID).as("id"), upper(trim('airlineCode)).as("code"))
+        struct(nullIntTransformer('airlineID).as("id"), upper(trim(notNullTransformer('airlineCode))).as("code"))
       )
       .withColumn("sourceAirport",
-        struct(nullIntTransformer('sourceAirportID).as("id"), upper(trim('sourceAirport)).as("code"))
+        struct(nullIntTransformer('sourceAirportID).as("id"), upper(trim(notNullTransformer('sourceAirport))).as("code"))
       )
       .withColumn("destinationAirport",
-        struct(nullIntTransformer('destinationAirportID).as("id"), upper(trim('destinationAirport)).as("code"))
+        struct(nullIntTransformer('destinationAirportID).as("id"), upper(trim(notNullTransformer('destinationAirport))).as("code"))
       )
       .withColumn("codeShare", when(upper('codeShare) === "Y", true).otherwise(false))
-      .withColumn("stops", 'stops.cast(IntegerType))
+      .withColumn("stops", notNullTransformer('stops).cast(IntegerType))
       .withColumn("equipment", equipmentUdf(split(upper(trim('equipment)), " ")))
       .drop("airlineID", "airlineCode", "sourceAirportID", "destinationAirportID")
       .as[Route]

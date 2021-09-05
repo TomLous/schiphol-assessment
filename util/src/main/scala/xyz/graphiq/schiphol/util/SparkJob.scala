@@ -1,4 +1,4 @@
-package xyz.graphiq.schiphol.analytics.util
+package xyz.graphiq.schiphol.util
 
 import org.apache.log4j.Logger
 import org.apache.spark.SparkConf

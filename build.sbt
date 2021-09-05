@@ -1,14 +1,20 @@
 //
-
+lazy val util = (project in file("util"))
+  .settings(
+    commonSettings,
+    testSettings,
+    runLocalSettings,
+    name := "util"
+  )
 
 lazy val model = (project in file("model"))
   .settings(
     commonSettings,
     testSettings,
-    assemblySettings,
     runLocalSettings,
     name := "model"
   )
+  .dependsOn(util % "compile->compile;test->test")
 
 lazy val analytics = (project in file("analytics"))
   .settings(
@@ -17,7 +23,9 @@ lazy val analytics = (project in file("analytics"))
     assemblySettings,
     runLocalSettings,
     name := "analytics"
-  ).dependsOn(model)
+  )
+  .dependsOn(util % "compile->compile;test->test")
+  .dependsOn(model)
 
 // Overarching project
 lazy val root = (project in file("."))

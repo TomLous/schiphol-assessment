@@ -3,9 +3,10 @@ package xyz.graphiq.schiphol.analytics.jobs
 import org.apache.spark.sql.{Dataset, SaveMode}
 import xyz.graphiq.schiphol.analytics.config.BatchJobConfig
 import xyz.graphiq.schiphol.analytics.transformer.TopAirportsTransformer
-import xyz.graphiq.schiphol.analytics.util.{SchemaLoader, SparkJob}
+
 import xyz.graphiq.schiphol.model.Route
 import xyz.graphiq.schiphol.transformer.RouteRawTransformer
+import xyz.graphiq.schiphol.util.{SchemaLoader, SparkJob}
 
 
 object BatchJob extends App with SparkJob{

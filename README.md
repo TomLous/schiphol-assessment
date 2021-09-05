@@ -21,3 +21,24 @@ We would like to be able to check your assignment. Code produced plus a descript
 
 The goal of the exercise is not to get perfect solutions but rather to test candidate’s ability to implement the assignment, flexibility, willingness to learn and explain technical solutions they implemented.
 
+## Solution
+
+### Structure
+
+Tthe project consists of 3 sub modules, to be abstracted away in separate libraries
+
+1. `util`, which is project independent useful tooling for Spark Jobs
+2. `model`, which contains case classes / schema definitions and some transformers that are closely related to schema transformers. This should live near a schema registry and either feed the registry or be feed by it. 
+3. `analytics`, which contains the actual code to do the analytics required in this assignment.
+
+
+### Config
+
+
+
+### Run
+
+
+### Build & deploy
+
+
