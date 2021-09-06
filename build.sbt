@@ -1,28 +1,26 @@
 //
 lazy val util = (project in file("util"))
   .settings(
+    name := "util",
     commonSettings,
-    testSettings,
-    runLocalSettings,
-    name := "util"
+    testSettings
   )
 
 lazy val model = (project in file("model"))
   .settings(
+    name := "model",
     commonSettings,
-    testSettings,
-    runLocalSettings,
-    name := "model"
+    testSettings
   )
   .dependsOn(util % "compile->compile;test->test")
 
 lazy val analytics = (project in file("analytics"))
   .settings(
+    name := "analytics",
     commonSettings,
     testSettings,
     assemblySettings,
-    runLocalSettings,
-    name := "analytics"
+    runLocalSettings
   )
   .dependsOn(util % "compile->compile;test->test")
   .dependsOn(model)
@@ -33,7 +31,9 @@ lazy val root = (project in file("."))
     name := "schiphol-assessment"
   )
   .aggregate(
-    model
+    util,
+    model,
+    analytics
   )
 
 
@@ -46,7 +46,7 @@ val sparkLibs = Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % Provided,
   "org.apache.spark" %% "spark-sql" % sparkVersion % Provided,
   "org.apache.spark" %% "spark-streaming" % sparkVersion % Provided,
-  "org.apache.spark" %% "spark-avro" % sparkVersion % Provided
+  "org.apache.spark" %% "spark-avro" % sparkVersion
 )
 
 val loggingLibs = Seq(
@@ -69,18 +69,7 @@ val testingLibs = Seq(
 lazy val commonSettings = Seq(
   organization := "xyz.graphiq",
   scalaVersion := "2.12.14",
-  libraryDependencies ++= sparkLibs ++ loggingLibs ++ configLibs ++ testingLibs,
-  scalacOptions ++= Seq(
-    "-deprecation", // Emit warning and location for usages of deprecated APIs.
-    "-encoding",
-    "UTF-8", // Specify character encoding used by source files.
-    "-explaintypes", // Explain type errors in more detail.
-    "-feature", // Emit warning and location for usages of features that should be imported explicitly.
-    "-language:existentials", // Existential types (besides wildcard types) can be written and inferred
-    "-language:experimental.macros", // Allow macro definition (besides implementation and application)
-    "-language:higherKinds", // Allow higher-kinded types
-    "-language:implicitConversions", // Allow definition of implicit functions called views
-  )
+  libraryDependencies ++= sparkLibs ++ loggingLibs ++ configLibs ++ testingLibs
 )
 
 // Test settings
@@ -93,13 +82,14 @@ lazy val testSettings = Seq(
 // Assembly options
 lazy val assemblySettings = Seq(
   assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false),
-  assembly / assemblyOutputPath := baseDirectory.value / "output" / (assembly / assemblyJarName).value,
+  assembly / assemblyOutputPath := baseDirectory.value / "../output/bin" / (assembly / assemblyJarName).value,
   assembly / assemblyMergeStrategy := {
     case PathList("META-INF", _@_*) => MergeStrategy.discard
     case _ => MergeStrategy.first
   },
   assembly / logLevel := sbt.util.Level.Error,
   assembly / test := {},
+  assembly / assemblyShadeRules := Seq(ShadeRule.rename("shapeless.**" -> "new_shapeless.@1").inAll),
   pomIncludeRepository := { _ => false }
 )
 
@@ -121,6 +111,27 @@ lazy val runLocalSettings = Seq(
     .evaluated
 )
 
+// JVM
 
+val jvmVersion = "11"
 
+javacOptions ++= Seq("-source", jvmVersion, "-target", jvmVersion, "-Xlint")
 
+scalacOptions ++= Seq(
+  "-deprecation", // Emit warning and location for usages of deprecated APIs.
+  "-encoding",
+  "UTF-8", // Specify character encoding used by source files.
+  "-explaintypes", // Explain type errors in more detail.
+  "-feature", // Emit warning and location for usages of features that should be imported explicitly.
+  "-language:existentials", // Existential types (besides wildcard types) can be written and inferred
+  "-language:experimental.macros", // Allow macro definition (besides implementation and application)
+  "-language:higherKinds", // Allow higher-kinded types
+  "-language:implicitConversions", // Allow definition of implicit functions called views
+)
+
+initialize := {
+  val _ = initialize.value // run the previous initialization
+  val required = jvmVersion
+  val current  = sys.props("java.specification.version")
+  assert(current == required, s"Unsupported JDK: java.specification.version $current != $required")
+}
