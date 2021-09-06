@@ -19,7 +19,7 @@ class TopAirportsTransformerTest extends AnyFlatSpec with Matchers with SparkTes
     Airport(Some(2), "C")
   )
 
-  private  lazy val routes = List(
+  private val routes = List(
     Route(airline = airline, sourceAirport = airports(0), destinationAirport = airports(0), codeShare = false, stops = 0, equipment = Nil), // A -> A
     Route(airline = airline, sourceAirport = airports(1), destinationAirport = airports(1), codeShare = false, stops = 0, equipment = Nil), // A -> A
     Route(airline = airline, sourceAirport = airports(2), destinationAirport = airports(0), codeShare = false, stops = 0, equipment = Nil), // B -> A
@@ -32,14 +32,14 @@ class TopAirportsTransformerTest extends AnyFlatSpec with Matchers with SparkTes
     Route(airline = airline, sourceAirport = airports(5), destinationAirport = airports(2), codeShare = false, stops = 0, equipment = Nil), // C -> B
     Route(airline = airline, sourceAirport = airports(5), destinationAirport = airports(0), codeShare = false, stops = 0, equipment = Nil), // C -> A
     Route(airline = airline, sourceAirport = airports(0), destinationAirport = airports(5), codeShare = false, stops = 0, equipment = Nil), // A -> C
-  ).toDS()
+  )
 
   // Total source A: 3, B: 4, C: 5
   // Total dest A: 7, B: 4, C: 1
 
-  "TopAirportsTransformer" should "create a correct top 3 from Source routes" in {
+  "TopAirportsTransformer" should "create a correct top 3 from Source routes using Dataset Transformers" in {
 
-    val top3SourcesCalc = routes
+    val top3SourcesCalc = routes.toDS()
       .transform(TopAirportsTransformer(3, TopAirportsTransformer.Source))
       .collect()
       .toList
@@ -54,9 +54,9 @@ class TopAirportsTransformerTest extends AnyFlatSpec with Matchers with SparkTes
 
   }
 
-  it should "create a correct top 3 from Destination routes" in {
+  it should "create a correct top 3 from Destination routes using Dataset Transformers" in {
 
-    val top3SourcesCalc = routes
+    val top3DestCalc = routes.toDS()
       .transform(TopAirportsTransformer(3, TopAirportsTransformer.Destination))
       .collect()
       .toList
@@ -67,8 +67,22 @@ class TopAirportsTransformerTest extends AnyFlatSpec with Matchers with SparkTes
       TopAirports("C", 1)
     )
 
-    top3SourcesCalc should equal(top3DestinationComp)
+    top3DestCalc should equal(top3DestinationComp)
 
   }
+
+  it should "create a correct top 3 from Source routes using Window Iterators" in {
+    val top3SourcesCalc = TopAirportsTransformer.windowedAggregator(routes.toIterator, 3, TopAirportsTransformer.Source)
+
+    val top3SourceComp = List(
+      TopAirports("C", 5),
+      TopAirports("B", 4),
+      TopAirports("A", 3)
+    )
+
+    top3SourcesCalc should equal(top3SourceComp)
+  }
+
+
 
 }

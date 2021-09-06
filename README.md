@@ -8,8 +8,13 @@ Here is a link with a dataset which you use for this assignment: <https://raw.gi
 The documentation for this data can be found here: <https://openflights.org/data.html .
 
 ### Assignment
-Using the flight routes dataset you will stream the given data into our pipeline, process it and display results. Keep in mind the resulting implementation needs to be somehow demoable. Use tooling you think is best fitted for the task (e.g. Docker, public cloud, etc.) and give us an explanation why you decided for it.
-For the sake of this assignment, we limit the choice of processing framework to Apache Spark. We strongly suggest the use of Spark Structured Streaming over Spark Streaming. Use either Python or Scala.
+Using the flight routes dataset you will stream the given data into our pipeline, process it and display results. 
+Keep in mind the resulting implementation needs to be somehow demoable. 
+Use tooling you think is best fitted for the task (e.g. Docker, public cloud, etc.) and give us an explanation why you decided for it.
+For the sake of this assignment, we limit the choice of processing framework to Apache Spark. 
+We strongly suggest the use of Spark Structured Streaming over Spark Streaming. 
+Use either Python or Scala.
+
 Tasks:
 
 1. Create a batch Spark job that read in the routes dataset. It should create an overview of the top 10 airports used as source airport. Write the output to a filesystem.

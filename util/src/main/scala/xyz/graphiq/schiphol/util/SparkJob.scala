@@ -10,6 +10,7 @@ trait SparkJob {
   def sparkConf: SparkConf = {
     new SparkConf()
       .setIfMissing("spark.master", "local[*]")
+      .setIfMissing("spark.sql.streaming.forceDeleteTempCheckpointLocation","true")
   }
 
   lazy val appName: String = this.getClass.getSimpleName.replace("$", "")

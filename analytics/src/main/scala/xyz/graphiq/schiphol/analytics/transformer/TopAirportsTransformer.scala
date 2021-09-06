@@ -4,6 +4,8 @@ import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import xyz.graphiq.schiphol.model.{Route, TopAirports}
 
+import scala.collection.immutable.HashMap
+
 object TopAirportsTransformer {
   trait TopType {
     def field: Route => String
@@ -15,6 +17,23 @@ object TopAirportsTransformer {
 
   case object Destination extends TopType {
     override val field: Route => String = _.destinationAirport.code
+  }
+
+  def windowedAggregator(routes: Iterator[Route], top: Int = 10, topType: TopAirportsTransformer.TopType):List[TopAirports] = {
+    routes
+      .toStream
+      .map(route => topType match {
+        case Source => (route.sourceAirport.code, 1)
+        case Destination => (route.destinationAirport.code, 1)
+      })
+      .groupBy(_._1)
+      .mapValues(_.length)
+      .map{
+        case (code, count) => TopAirports(code, count)
+      }
+      .toList
+      .sortBy(- _.count)
+      .take(top)
   }
 }
 

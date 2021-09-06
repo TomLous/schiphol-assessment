@@ -4,22 +4,17 @@ import org.apache.spark.SparkException
 import org.apache.spark.sql.DataFrame
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import xyz.graphiq.schiphol.reader.RouteRawReader
 import xyz.graphiq.schiphol.util.SparkTestJob
 
 import scala.util.{Failure, Success, Try}
 
-class RouteRawTransformerTest extends AnyFlatSpec with Matchers with SparkTestJob{
+class RouteRawTransformerTest extends AnyFlatSpec with Matchers with SparkTestJob {
 
-  private def readCsvToDF(fileName:String):DataFrame =
-    spark
-      .read
-      .option("header", "false")
-      .option("delimiter", ",")
-      .option("inferSchema", "true")
-      .option("treatEmptyValuesAsNulls", "true")
-      .option("nullValue", """\N""")
-      .csv(s"$testDataPath/$fileName")
-      .toDF("airlineCode", "airlineID", "sourceAirport", "sourceAirportID", "destinationAirport", "destinationAirportID", "codeShare", "stops", "equipment")
+  private def readCsvToDF(fileName: String): DataFrame = RouteRawReader
+    .readCsv(spark.read)
+    .load(s"$testDataPath/$fileName")
+    .toDF("airlineCode", "airlineID", "sourceAirport", "sourceAirportID", "destinationAirport", "destinationAirportID", "codeShare", "stops", "equipment")
 
 
   "RouteRawTransformer" should "transform a correct csv" in {
@@ -35,7 +30,6 @@ class RouteRawTransformerTest extends AnyFlatSpec with Matchers with SparkTestJo
     val df = readCsvToDF("routes-test2.dat").transform(RouteRawTransformer())
     assertThrows[SparkException](df.collect())
   }
-
 
 
 }
