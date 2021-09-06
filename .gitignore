@@ -15,3 +15,10 @@
 project/project
 target/
 *.log
+
+
+# Local run & build
+/spark-warehouse/
+output/
+secrets
+
